@@ -1,8 +1,8 @@
 #include <iostream>
 #include <unistd.h>
+#include <limits>
 
-#define LIMIT (unsigned long) 1E10
-#define PROCESSES 8
+typedef std::numeric_limits< double > dbl;
 
 using namespace std;
 
@@ -24,7 +24,16 @@ void *PartialLeibniz(void *task) {
     return nullptr;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+
+    auto processes = 8u;
+    auto iter = 1000000000ul; // 1E9
+    if (argc > 1) {
+        processes = (unsigned int) atoi(argv[1]);
+    }
+    if (argc > 2) {
+        iter = (unsigned long) atol(argv[2]);
+    }
 
     int taskpipe[2], respipe[2];
     if (pipe(taskpipe) == -1 || pipe(respipe)) {
@@ -32,14 +41,16 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    for (auto i = 0u; i < PROCESSES; ++i) {
+    //Map tasks
+    for (auto i = 0u; i < processes; ++i) {
         Task task;
-        task.start = LIMIT / PROCESSES * i;
-        task.end = LIMIT / PROCESSES * (i + 1);
+        task.start = iter / processes * i;
+        task.end = iter / processes * (i + 1);
         write(taskpipe[1], &task, sizeof(Task));
     }
 
-    for (auto i = 0u; i < PROCESSES; ++i) {
+    //Fork
+    for (auto i = 0u; i < processes; ++i) {
         pid_t pid = fork();
         if (pid == 0) {
             // Child
@@ -58,13 +69,18 @@ int main() {
             return EXIT_FAILURE;
         }
     }
+
+    //Reduce results
     double sum = 0.0;
-    for (auto i = 0u; i < PROCESSES; ++i) {
+    for (auto i = 0u; i < processes; ++i) {
         Task res;
         read(respipe[0], &res, sizeof(Task));
         sum += res.res;
     }
-    cout << "Sum\t" << sum << endl;
-    cout << "PI\t" << sum * 4.0 << endl;
+    cout << "Processes\t" << processes << endl;
+    cout << "Iterations\t" << iter << endl;
+    cout.precision(dbl::max_digits10);
+    cout << "Sum\t\t" << sum << endl;
+    cout << "PI\t\t" << sum * 4.0 << endl;
     return EXIT_SUCCESS;
 }

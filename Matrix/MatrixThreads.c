@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <pthread.h>
 
 struct Task {
     unsigned long start;
@@ -32,36 +33,15 @@ int main(int argc, char *argv[]) {
         iter = (unsigned long) atol(argv[2]);
     }
 
-    int taskpipe[2], respipe[2];
-    if (pipe(taskpipe) == -1 || pipe(respipe)) {
-        perror("pipe() failed");
-        return EXIT_FAILURE;
-    }
+    pthread_t threads[256];
+    struct Task tasks[256];
 
     //Map tasks
     for (int i = 0; i < processes; ++i) {
-        struct Task task;
-        task.start = iter / processes * i;
-        task.end = iter / processes * (i + 1);
-        write(taskpipe[1], &task, sizeof(struct Task));
-    }
-
-    //Fork
-    for (int i = 0; i < processes; ++i) {
-        pid_t pid = fork();
-        if (pid == 0) {
-            // Child
-            struct Task myTask;
-            read(taskpipe[0], &myTask, sizeof(struct Task));
-            PartialLeibniz(&myTask);
-            write(respipe[1], &myTask, sizeof(struct Task));
-            return EXIT_SUCCESS;
-        }
-        else if (pid > 0) {
-            // Parent
-        }
-        else {
-            // Error
+        //tasks[i] = Task();
+        tasks[i].start = iter / processes * i;
+        tasks[i].end = iter / processes * (i + 1);
+        if (pthread_create(&threads[i], NULL, PartialLeibniz, (void *) &tasks[i])) {
             perror("fork() failed");
             return EXIT_FAILURE;
         }
@@ -70,9 +50,8 @@ int main(int argc, char *argv[]) {
     //Reduce results
     double sum = 0.0;
     for (int i = 0; i < processes; ++i) {
-        struct Task res;
-        read(respipe[0], &res, sizeof(struct Task));
-        sum += res.res;
+        pthread_join(threads[i], NULL);
+        sum += tasks[i].res;
     }
     printf("Processes\t%d\n", processes);
     printf("Iterations\t%ld\n", iter);

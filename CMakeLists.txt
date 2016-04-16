@@ -15,3 +15,8 @@ add_executable(PIFork PI/PIFork.c)
 
 add_executable(PIThreads PI/PIThreads.c)
 target_link_libraries(PIThreads ${CMAKE_THREAD_LIBS_INIT})
+
+add_executable(MatrixFork Matrix/MatrixFork.c)
+
+add_executable(MatrixThreads Matrix/MatrixThreads.c)
+target_link_libraries(PIThreads ${CMAKE_THREAD_LIBS_INIT})

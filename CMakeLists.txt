@@ -6,11 +6,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 find_package(Threads REQUIRED)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
 set(SOURCE_FILES main.cpp)
 add_executable(ParallelComputingUNAL ${SOURCE_FILES})
 
-add_executable(PIFork PIFork.cpp)
+add_executable(PIFork PIFork.c)
 
-add_executable(PIThreads PIThreads.cpp)
+add_executable(PIThreads PIThreads.c)
 target_link_libraries(PIThreads ${CMAKE_THREAD_LIBS_INIT})

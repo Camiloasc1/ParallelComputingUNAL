@@ -26,10 +26,10 @@ int main(int argc, char *argv[]) {
     unsigned int processes = 8u;
     unsigned long iter = 1000000000ul; // 1E9
     if (argc > 1) {
-        processes = (int) atoi(argv[1]);
+        processes = (unsigned int) atoi(argv[1]);
     }
     if (argc > 2) {
-        iter = (long) atol(argv[2]);
+        iter = (unsigned long) atol(argv[2]);
     }
 
     int taskpipe[2], respipe[2];

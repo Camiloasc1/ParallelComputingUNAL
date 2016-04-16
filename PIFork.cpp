@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <limits>
 
-typedef std::numeric_limits< double > dbl;
+typedef std::numeric_limits<double> dbl;
 
 using namespace std;
 
@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
     int taskpipe[2], respipe[2];
     if (pipe(taskpipe) == -1 || pipe(respipe)) {
         cerr << "pipe() failed" << endl;
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     //Map tasks

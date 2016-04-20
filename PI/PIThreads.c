@@ -33,8 +33,10 @@ int main(int argc, char *argv[]) {
         iter = (unsigned long) atol(argv[2]);
     }
 
-    pthread_t threads[256];
-    struct Task tasks[256];
+    pthread_t *threads;
+    struct Task *tasks;
+    threads = (pthread_t *) malloc(processes * sizeof(pthread_t));
+    tasks = (struct Task *) malloc(processes * sizeof(struct Task));
 
     //Map tasks
     for (int i = 0; i < processes; ++i) {
@@ -42,7 +44,7 @@ int main(int argc, char *argv[]) {
         tasks[i].start = iter / processes * i;
         tasks[i].end = iter / processes * (i + 1);
         if (pthread_create(&threads[i], NULL, PartialLeibniz, (void *) &tasks[i])) {
-            perror("fork() failed");
+            perror("pthread_create() failed");
             return EXIT_FAILURE;
         }
     }
@@ -57,5 +59,7 @@ int main(int argc, char *argv[]) {
     printf("Iterations\t%ld\n", iter);
     printf("Sum\t\t%f\n", sum);
     printf("PI\t\t%f\n", sum * 4.0);
+    free(threads);
+    free(tasks);
     return EXIT_SUCCESS;
 }

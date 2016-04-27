@@ -1,6 +1,6 @@
 reset
 set title "Speedup of execution"
-set ylabel "Time (s)" 
+set ylabel "Speedup (/)" 
 set xlabel "Processes or Threads (#)" 
 
 set style line 1 lc rgb '#000000' lt 1 lw 2 pt 7 ps 1.5

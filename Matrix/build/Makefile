@@ -1,6 +1,6 @@
 build:
-	gcc -std=c11 -o MatrixThreads ../MatrixThreads.c -lpthread
-	gcc -std=c11 -o MatrixFork ../MatrixFork.c
+	gcc -std=c11 -s -O3 -o MatrixThreads ../MatrixThreads.c -lpthread
+	gcc -std=c11 -s -O3 -o MatrixFork ../MatrixFork.c
 
 all: build
 

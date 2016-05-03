@@ -5,6 +5,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 
 find_package(Threads REQUIRED)
 
+find_package(OpenMP)
+if (OPENMP_FOUND)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
 
@@ -15,6 +21,9 @@ add_executable(PIFork PI/PIFork.c)
 
 add_executable(PIThreads PI/PIThreads.c)
 target_link_libraries(PIThreads ${CMAKE_THREAD_LIBS_INIT})
+
+add_executable(PIOpenMP PI/PIOpenMP.c)
+add_executable(PIOpenMPFalseSharing PI/PIOpenMPFalseSharing.c)
 
 add_executable(MatrixFork Matrix/MatrixFork.c)
 #target_link_libraries(MatrixFork m)

@@ -23,6 +23,7 @@ add_executable(PIThreads PI/PIThreads.c)
 target_link_libraries(PIThreads ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(PIOpenMP PI/PIOpenMP.c)
+
 add_executable(PIOpenMPFalseSharing PI/PIOpenMPFalseSharing.c)
 
 add_executable(MatrixFork Matrix/MatrixFork.c)
@@ -30,3 +31,5 @@ add_executable(MatrixFork Matrix/MatrixFork.c)
 
 add_executable(MatrixThreads Matrix/MatrixThreads.c)
 target_link_libraries(MatrixThreads ${CMAKE_THREAD_LIBS_INIT})
+
+add_executable(MatrixOpenMP Matrix/MatrixOpenMP.c)

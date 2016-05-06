@@ -3,16 +3,20 @@ project(ParallelComputingUNAL)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 
-find_package(Threads REQUIRED)
+find_package(Threads)
 
 find_package(OpenMP)
 if (OPENMP_FOUND)
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-endif()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif ()
+
+find_package(CUDA)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
+set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_52,code=compute_52")
+SET(CUDA_PROPAGATE_HOST_FLAGS OFF)
 
 set(SOURCE_FILES main.cpp)
 add_executable(ParallelComputingUNAL ${SOURCE_FILES})
@@ -33,3 +37,5 @@ add_executable(MatrixThreads Matrix/MatrixThreads.c)
 target_link_libraries(MatrixThreads ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(MatrixOpenMP Matrix/MatrixOpenMP.c)
+
+cuda_add_executable(MatrixCUDA Matrix/MatrixCUDA.cu)

@@ -52,11 +52,8 @@ int main(int argc, char *argv[]) {
     curandCreateGenerator(&rnd, CURAND_RNG_PSEUDO_MTGP32);
     curandSetPseudoRandomGeneratorSeed(rnd, SEED);
 
-    unsigned long h_inside, h_outside;
+    unsigned long h_inside = 0, h_outside = 0;
     unsigned long *d_inside, *d_outside;
-
-    h_inside = 0;
-    h_outside = 0;
 
     cudaMalloc((void **) &d_inside, sizeof(unsigned long));
     cudaMalloc((void **) &d_outside, sizeof(unsigned long));
@@ -64,9 +61,7 @@ int main(int argc, char *argv[]) {
     cudaMemcpy(d_inside, &h_inside, sizeof(unsigned long), cudaMemcpyHostToDevice);
     cudaMemcpy(d_outside, &h_outside, sizeof(unsigned long), cudaMemcpyHostToDevice);
 
-    double pi, error;
-    pi = 0.0;
-    error = 1.0;
+    double pi, error = 1.0;
     unsigned long i = 0;
     while (error > precision && i < LIMIT) {
         curandGenerateUniformDouble(rnd, X, randomSize);

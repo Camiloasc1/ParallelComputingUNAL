@@ -12,13 +12,9 @@ int main(int argc, char *argv[]) {
 
     srand(SEED);
 
-    unsigned long inside, outside;
-    inside = 0;
-    outside = 0;
+    unsigned long inside = 0, outside = 0;
 
-    double pi, error;
-    pi = 0.0;
-    error = 1.0;
+    double pi, error = 1.0;
 
     omp_set_num_threads(threads);
     unsigned long i = 0;

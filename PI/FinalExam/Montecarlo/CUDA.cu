@@ -1,14 +1,10 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <time.h>
 #include <curand.h>
 
-#define PI 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679
 #define CHUNK 1 //Run CHUNK blocks, each with 1024 threads (or with the specified argument) and check error
-#define LOG 1024
-#define LIMIT 1024*1024
-#define SEED 1 // (unsigned int) time(NULL)
+#define LOG 1024 // Print progress each LOG iterations
+#define LIMIT 1024*1024 // LIMIT of iterations
+
+#include "../common.h"
 
 __global__ void MontecarloPI(unsigned long *inside, unsigned long *outside, double *X, double *Y) {
 
@@ -40,15 +36,10 @@ __global__ void MontecarloPI(unsigned long *inside, unsigned long *outside, doub
 }
 
 int main(int argc, char *argv[]) {
-    unsigned int digits = 10;
-    unsigned int threads = 1024u;
-    if (argc > 1) {
-        digits = (unsigned int) atoi(argv[1]);
-    }
-    if (argc > 2) {
-        threads = (unsigned int) atoi(argv[2]);
-    }
-    double prec = pow(10, -((double) digits));
+    unsigned int digits;
+    unsigned int threads;
+    double precision;
+    getParams(argc, argv, &threads, &digits, &precision);
 
     srand(SEED);
 
@@ -77,7 +68,7 @@ int main(int argc, char *argv[]) {
     pi = 0.0;
     error = 1.0;
     unsigned long i = 0;
-    while (error > prec && i < LIMIT) {
+    while (error > precision && i < LIMIT) {
         curandGenerateUniformDouble(rnd, X, randomSize);
         curandGenerateUniformDouble(rnd, Y, randomSize);
         //@formatter:off
@@ -89,16 +80,8 @@ int main(int argc, char *argv[]) {
         cudaMemcpy(&h_outside, d_outside, sizeof(unsigned long), cudaMemcpyDeviceToHost);
 
         pi = 4.0 * h_inside / (h_outside + h_inside);
-        error = PI - pi;
-        error = error > 0 ? error : -error;
-        i++;
-        if (i % LOG == 0 || error < prec || i == LIMIT) {
-            printf("Iteration\t%ld\n", i);
-            printf("Precision\t%d (%s)\n", (unsigned int) floor(-log10(error)),
-                   i == LIMIT ? "Timeout" : error > prec ? "Still Working" : "Reached");
-            printf("PI\t\t%.100f\n", pi);
-            printf("Error\t\t%.100f\n", error);
-        }
+        error = getError(pi);
+        printLog(precision, pi, error, ++i);
     }
 
     cudaFree(d_inside);

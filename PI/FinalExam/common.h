@@ -42,10 +42,10 @@ inline void getParams(int argc, char *const *argv, unsigned int *threads, unsign
     *threads = 8u;
 #endif
     if (argc > 1) {
-        *digits = (unsigned int) atoi(argv[1]);
+        *threads = (unsigned int) atoi(argv[1]);
     }
     if (argc > 2) {
-        *threads = (unsigned int) atoi(argv[2]);
+        *digits = (unsigned int) atoi(argv[2]);
     }
     *precision = pow(10, -((double) *digits));
 }

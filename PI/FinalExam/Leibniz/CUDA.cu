@@ -4,26 +4,28 @@
 
 #include "../common.h"
 
+#warning "By some reason gets stuck at 9 digits"
+//PI		3.1415926531914961650215900590410456061363220214843750000000000000000000000000000000000000000000000000
+//Error		0.0000000003982969509763734095031395554542541503906250000000000000000000000000000000000000000000000000
+
 __device__ double atomicAdd(double *, double);
 
 __global__ void LeibnizPI(double *sum, unsigned long offset) {
 
-    __shared__ double partialSum;
-
-    if (threadIdx.x == 0) {
-        partialSum = 0.0;
-    }
-
-    __syncthreads();
+    __shared__ double partialSum[1024];
 
     unsigned long n = (offset * CHUNK + blockIdx.x) * blockDim.x + threadIdx.x;
-    double val = ((n % 2 == 0) ? 1.0 : -1.0) / ((n << 1) + 1);
-    atomicAdd(&partialSum, val);
+    partialSum[threadIdx.x] = ((n % 2 == 0) ? 1.0 : -1.0) / ((n << 1) + 1);
 
     __syncthreads();
 
     if (threadIdx.x == 0) {
-        *sum += partialSum;
+        double total = 0.0;
+        for (int i = 0; i < blockDim.x; ++i) {
+            total += partialSum[i];
+        }
+        atomicAdd(sum, total);
+        // *sum += total;
     }
 }
 
@@ -34,7 +36,9 @@ __device__ double atomicAdd(double *address, double val) {
 
     do {
         assumed = old;
-        old = atomicCAS(address_as_ull, assumed, __double_as_longlong(val + __longlong_as_double(assumed)));
+        old = atomicCAS(address_as_ull, assumed,
+                        __double_as_longlong(val +
+                                             __longlong_as_double(assumed)));
 
         // Note: uses integer comparison to avoid hang in case of NaN (since NaN != NaN)
     } while (assumed != old);

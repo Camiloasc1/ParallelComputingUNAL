@@ -19,7 +19,7 @@ double getError(double pi);
 void getParams(int argc, char *const *argv, unsigned int *threads, unsigned int *digits, double *precision);
 
 inline void printLog(double precision, double pi, double error, unsigned long i) {
-    if (i % LOG == 0 || error < precision || i == LIMIT) {
+    if (i % (LOG) == 0 || error < precision || i == LIMIT) {
         printf("Iteration\t%ld\n", i);
         printf("Precision\t%d (%s)\n", (unsigned int) floor(-log10(error)),
                i == LIMIT ? "Timeout" : error > precision ? "Still Working" : "Reached");

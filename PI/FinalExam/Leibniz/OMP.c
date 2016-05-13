@@ -10,10 +10,7 @@ int main(int argc, char *argv[]) {
     double precision;
     getParams(argc, argv, &threads, &digits, &precision);
 
-    double sum, pi, error;
-    sum = 0.0;
-    pi = 0.0;
-    error = 1.0;
+    double sum= 0.0, pi, error= 1.0;
 
     omp_set_num_threads(threads);
     unsigned long i = 0;

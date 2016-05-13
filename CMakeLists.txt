@@ -49,10 +49,10 @@ target_link_libraries(LeibnizCUDA m)
 
 add_executable(GaussLegendreSequential PI/FinalExam/GaussLegendre/Sequential.c PI/FinalExam/common.h)
 #add_executable(GaussLegendreOMP PI/FinalExam/GaussLegendre/OMP.c PI/FinalExam/common.h)
-cuda_add_executable(GaussLegendreCUDA PI/FinalExam/GaussLegendre/CUDA.cu PI/FinalExam/common.h)
+#cuda_add_executable(GaussLegendreCUDA PI/FinalExam/GaussLegendre/CUDA.cu PI/FinalExam/common.h)
 target_link_libraries(GaussLegendreSequential m)
 #target_link_libraries(GaussLegendreOMP m)
-target_link_libraries(GaussLegendreCUDA m)
+#target_link_libraries(GaussLegendreCUDA m)
 
 #add_executable(MontecarloSequential PI/FinalExam/Montecarlo/Sequential.c PI/FinalExam/common.h)
 add_executable(MontecarloOMP PI/FinalExam/Montecarlo/OMP.c PI/FinalExam/common.h)

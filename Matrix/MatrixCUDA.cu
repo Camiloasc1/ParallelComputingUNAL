@@ -15,8 +15,8 @@ __global__ void PartialMM(double *A, double *B, double *C, unsigned int N) {
 
 int main(int argc, char *argv[]) {
 
-    unsigned int threads = 1u;
-    unsigned int N = 32u;
+    unsigned int threads = 1024u;
+    unsigned int N = 1024u;
     if (argc > 1) {
         threads = (unsigned int) atoi(argv[1]);
     }

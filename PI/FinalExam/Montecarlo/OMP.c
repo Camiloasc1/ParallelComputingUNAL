@@ -11,6 +11,7 @@ int main(int argc, char *argv[]) {
     getParams(argc, argv, &threads, &digits, &precision);
 
     srand(SEED);
+    unsigned int seed = SEED;
 
     double *X, *Y;
     X = (double *) malloc(CHUNK * sizeof(double));
@@ -23,14 +24,10 @@ int main(int argc, char *argv[]) {
     omp_set_num_threads(threads);
     unsigned long i = 0;
     while (error > precision && i < LIMIT) {
-        for (int n = 0; n < CHUNK; ++n) {
-            X[n] = (double) rand() / (double) RAND_MAX;
-            Y[n] = (double) rand() / (double) RAND_MAX;
-        }
-#pragma omp parallel for reduction(+:inside) reduction(+:outside)
+#pragma omp parallel for private(seed) reduction(+:inside) reduction(+:outside)
         for (unsigned long n = 0ul; n < CHUNK; ++n) {
-            double x = X[n];
-            double y = Y[n];
+            double x = (double) rand_r(&seed) / (double) RAND_MAX;
+            double y = (double) rand_r(&seed) / (double) RAND_MAX;
             if (x * x + y * y < 1.0) {
                 inside++;
             }

@@ -15,12 +15,14 @@ __global__ void PartialMM(double *A, double *B, double *C, unsigned int N) {
 
 int main(int argc, char *argv[]) {
 
-    unsigned int N = 1024u;
+    unsigned int threads = 1u;
+    unsigned int N = 32u;
     if (argc > 1) {
-        N = (unsigned int) atoi(argv[1]);
+        threads = (unsigned int) atoi(argv[1]);
     }
-    if (N < 32)
-        N = 32;
+    if (argc > 2) {
+        N = (unsigned int) atoi(argv[2]);
+    }
     srand((unsigned int) time(NULL));
 
     unsigned int size = N * N * sizeof(double);
@@ -36,8 +38,8 @@ int main(int argc, char *argv[]) {
     cudaMalloc((void **) &d_C, size);
 
     for (unsigned int k = 0u; k < N * N; ++k) {
-        h_A[k] = rand();
-        h_B[k] = rand();
+        h_A[k] = 2.0;//rand();
+        h_B[k] = 3.0;//rand();
         h_C[k] = 0.0;
     }
 
@@ -45,22 +47,69 @@ int main(int argc, char *argv[]) {
     cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice);
     cudaMemcpy(d_C, h_C, size, cudaMemcpyHostToDevice);
 
-    dim3 threads(32, 32); // 32*32=1024
-    dim3 grid(N / threads.x, N / threads.y);
+    dim3 block(1, 1);
+    switch (threads) {
+        case 1:
+            block.x = 1;
+            block.y = 1;
+            break;
+        case 2:
+            block.x = 2;
+            block.y = 1;
+            break;
+        case 4:
+            block.x = 2;
+            block.y = 2;
+            break;
+        case 8:
+            block.x = 4;
+            block.y = 2;
+            break;
+        case 16:
+            block.x = 4;
+            block.y = 4;
+            break;
+        case 32:
+            block.x = 8;
+            block.y = 4;
+            break;
+        case 64:
+            block.x = 8;
+            block.y = 8;
+            break;
+        case 128:
+            block.x = 16;
+            block.y = 8;
+            break;
+        case 256:
+            block.x = 16;
+            block.y = 16;
+            break;
+        case 512:
+            block.x = 32;
+            block.y = 16;
+            break;
+        case 1024:
+            block.x = 32;
+            block.y = 32;
+            break;
+    }
+    dim3 grid(N / block.x, N / block.y);
 
-    PartialMM<<<grid, threads>>>(d_A, d_B, d_C, N);
-
+    //@formatter:off
+    PartialMM<<<grid, block>>>(d_A, d_B, d_C, N);
+    //@formatter:on
     cudaDeviceSynchronize();
 
     cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
 
     printf("Size\t\t%dx%d\n", N, N);
-//    printf("Result:");
-//    for (unsigned int k = 0u; k < N * N; ++k) {
-//        if (k % N == 0)
-//            printf("\n");
-//        printf("%f ", h_C[k]);
-//    }
+    printf("Result:");
+    for (unsigned int k = 0u; k < N * N; ++k) {
+        if (k % N == 0)
+            printf("\n");
+        printf("%f ", h_C[k]);
+    }
 
     free(h_A);
     free(h_B);

@@ -1,7 +1,9 @@
 reset
 set title "Time of execution"
-set ylabel "Time (s)" 
-set xlabel "Processes or Threads (#)" 
+set ylabel "Time (s)"
+set xlabel "Processes or Threads (#)"
+
+set logscale x 2
 
 set style line 1 lc rgb '#000000' lt 1 lw 2 pt 1 ps 1.5
 set style line 2 lc rgb '#000088' lt 1 lw 2 pt 2 ps 1.5

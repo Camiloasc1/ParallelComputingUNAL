@@ -11,7 +11,7 @@ do
     echo "# N = $N (index $I)" >> Speedup.dat
     I=$((I + 1))
     T1=0
-    for P in 1 2 4 8 16 32 64 128 256 512 1024
+    for P in 1 2 4 8 16 32
     do
         TIME=$( { time ./$1 $P $N > /dev/null; } 2>&1 )
         if [ "$P" = "1" ]; then
